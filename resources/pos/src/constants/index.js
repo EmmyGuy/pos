@@ -3,7 +3,7 @@ export const apiBaseURL = {
     BRANDS: "/brands",
     CURRENCY: "/currencies",
     REGISTRATION: "/register",
-    PRODUCTS_CATEGORIES: "/product-categories",
+    PRODUCTS_CATEGORIES: "/product-categories", 
     VARIATIONS: "/variations",
     ROLES: "/roles",
     LANGUAGES: "/languages",

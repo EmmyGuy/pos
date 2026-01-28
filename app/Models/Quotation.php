@@ -173,4 +173,19 @@ class Quotation extends BaseModel implements JsonResourceful
     {
         return $this->hasMany(QuotationItem::class, 'quotation_id', 'id');
     }
+
+    public function payments()
+    {
+        return $this->hasMany(QuotationPayment::class);
+    }
+    
+    public function getTotalPaidAttribute()
+    {
+        return $this->payments()->sum('amount_paid');
+    }
+    
+    public function getBalanceAttribute()
+    {
+        return ($this->grand_total ?? 0) - $this->total_paid;
+    }
 }

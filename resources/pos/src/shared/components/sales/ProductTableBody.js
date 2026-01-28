@@ -7,6 +7,7 @@ import {
     discountAmountMultiply,
     subTotalCount,
     amountBeforeTax,
+    amountBeforeTax1,
 } from "../../calculation/calculation";
 import ProductModal from "./ProductModal";
 import { productSalesDropdown } from "../../../store/action/productSaleUnitAction";
@@ -37,6 +38,18 @@ const ProductTableBody = (props) => {
         frontSetting,
         allConfigData,
     } = props;
+
+
+    // AUTO-APPLY PRODUCT DISCOUNT STORED IN NOTES (ONLY FOR QUOTATION) -- by emma
+    if (singleProduct.notes && !singleProduct.discount_applied) {
+        const noteDiscount = Number(singleProduct.notes);
+
+        if (!isNaN(noteDiscount) && noteDiscount >= 1 && noteDiscount <= 20) {
+            singleProduct.discount_type = 1;      // % discount
+            singleProduct.discount_value = noteDiscount;
+            singleProduct.discount_applied = true;
+        }
+    }
     const [isShowModal, setIsShowModal] = useState(false);
     const [updateProductData, setUpdateProductData] = useState([]);
     const dispatch = useDispatch();
@@ -46,9 +59,9 @@ const ProductTableBody = (props) => {
             productSalesDropdown(singleProduct.product_unit);
     }, [updateProductData, singleProduct.sale_unit]);
 
-    useEffect(() => {
-        singleProduct.sub_total = Number(subTotalCount(singleProduct));
-    }, [singleProduct.sub_total]);
+    // useEffect(() => {
+    //     singleProduct.sub_total = Number(subTotalCount(singleProduct));
+    // }, [singleProduct.sub_total]);
 
     const onProductUpdateInCart = (item) => {
         setUpdateProductData(item);
@@ -59,112 +72,143 @@ const ProductTableBody = (props) => {
         setUpdateProducts(newProduct);
     };
 
+    // const handleIncrement = () => {
+    //     singleProduct.isSaleReturn || singleProduct.isSaleReturnEdit
+    //         ? setUpdateProducts((updateProducts) =>
+    //               updateProducts.map((item) => {
+    //                   if (item.id === singleProduct.id) {
+    //                       if (item.quantity >= item.sold_quantity) {
+    //                           dispatch(
+    //                               addToast({
+    //                                   text: getFormattedMessage(
+    //                                       "sale-return.product-qty.validate.message"
+    //                                   ),
+    //                                   type: toastType.ERROR,
+    //                               })
+    //                           );
+    //                           return item;
+    //                       } else {
+    //                           return { ...item, quantity: item.quantity++ + 1 };
+    //                       }
+    //                   } else {
+    //                       return item;
+    //                   }
+    //               })
+    //           )
+    //         : setUpdateProducts((updateProducts) =>
+    //               updateProducts.map((item) => {
+    //                   if (item.id === singleProduct.id) {
+    //                       const newQuantity = item.quantity + 1;
+    //                       if (
+    //                           item.quantity_limit &&
+    //                           newQuantity > item.quantity_limit
+    //                       ) {
+    //                           dispatch(
+    //                               addToast({
+    //                                   text: getFormattedMessage(
+    //                                       "sale.product-qty.limit.validate.message"
+    //                                   ),
+    //                                   type: toastType.ERROR,
+    //                               })
+    //                           );
+    //                           return { ...item };
+    //                       }
+    //                       return { ...item, quantity: newQuantity };
+    //                   } else {
+    //                       return item;
+    //                   }
+    //               })
+    //           );
+    // };
+
     const handleIncrement = () => {
-        singleProduct.isSaleReturn || singleProduct.isSaleReturnEdit
-            ? setUpdateProducts((updateProducts) =>
-                  updateProducts.map((item) => {
-                      if (item.id === singleProduct.id) {
-                          if (item.quantity >= item.sold_quantity) {
-                              dispatch(
-                                  addToast({
-                                      text: getFormattedMessage(
-                                          "sale-return.product-qty.validate.message"
-                                      ),
-                                      type: toastType.ERROR,
-                                  })
-                              );
-                              return item;
-                          } else {
-                              return { ...item, quantity: item.quantity++ + 1 };
-                          }
-                      } else {
-                          return item;
-                      }
-                  })
-              )
-            : setUpdateProducts((updateProducts) =>
-                  updateProducts.map((item) => {
-                      if (item.id === singleProduct.id) {
-                          const newQuantity = item.quantity + 1;
-                          if (
-                              item.quantity_limit &&
-                              newQuantity > item.quantity_limit
-                          ) {
-                              dispatch(
-                                  addToast({
-                                      text: getFormattedMessage(
-                                          "sale.product-qty.limit.validate.message"
-                                      ),
-                                      type: toastType.ERROR,
-                                  })
-                              );
-                              return { ...item };
-                          }
-                          return { ...item, quantity: newQuantity };
-                      } else {
-                          return item;
-                      }
-                  })
-              );
+        setUpdateProducts((prevProducts) =>
+            prevProducts.map((item) =>
+                item.id === singleProduct.id
+                    ? { ...item, quantity: Number(item.quantity) + 1 }
+                    : item
+            )
+        );
     };
 
+    // const handleDecrement = () => {
+    //     if (singleProduct.quantity - 1 > 0) {
+    //         setUpdateProducts((updateProducts) =>
+    //             updateProducts.map((item) =>
+    //                 item.id === singleProduct.id
+    //                     ? { ...item, quantity: item.quantity-- - 1 }
+    //                     : item
+    //             )
+    //         );
+    //     }
+    // };
     const handleDecrement = () => {
-        if (singleProduct.quantity - 1 > 0) {
-            setUpdateProducts((updateProducts) =>
-                updateProducts.map((item) =>
-                    item.id === singleProduct.id
-                        ? { ...item, quantity: item.quantity-- - 1 }
-                        : item
-                )
-            );
-        }
+        setUpdateProducts((updateProducts) =>
+            updateProducts.map((item) =>
+                item.id === singleProduct.id
+                    ? { ...item, quantity: Math.max(0, item.quantity - 1) }
+                    : item
+            )
+        );
     };
 
+    // const handleChange = (e) => {
+    //     e.preventDefault();
+    //     const { value } = e.target;
+    //     // check if value includes a decimal point
+    //     if (value.match(/\./g)) {
+    //         const [, decimal] = value.split(".");
+    //         // restrict value to only 2 decimal places
+    //         if (decimal?.length > 2) {
+    //             // do nothing
+    //             return;
+    //         }
+    //     }
+
+    //     singleProduct.isSaleReturn || singleProduct.isSaleReturnEdit
+    //         ? setUpdateProducts((updateProducts) =>
+    //               updateProducts.map((item) => {
+    //                   if (item.id === singleProduct.id) {
+    //                       if (item.sold_quantity < Number(e.target.value)) {
+    //                           dispatch(
+    //                               addToast({
+    //                                   text: getFormattedMessage(
+    //                                       "sale-return.product-qty.validate.message"
+    //                                   ),
+    //                                   type: toastType.ERROR,
+    //                               })
+    //                           );
+    //                           return { ...item, quantity: item.sold_quantity };
+    //                       } else {
+    //                           return {
+    //                               ...item,
+    //                               quantity: Number(e.target.value),
+    //                           };
+    //                       }
+    //                   } else {
+    //                       return item;
+    //                   }
+    //               })
+    //           )
+    //         : setUpdateProducts((updateProducts) =>
+    //               updateProducts.map((item) =>
+    //                   item.id === singleProduct.id
+    //                       ? { ...item, quantity: Number(value) }
+    //                       : item
+    //               )
+    //           );
+    // };
     const handleChange = (e) => {
         e.preventDefault();
-        const { value } = e.target;
-        // check if value includes a decimal point
-        if (value.match(/\./g)) {
-            const [, decimal] = value.split(".");
-            // restrict value to only 2 decimal places
-            if (decimal?.length > 2) {
-                // do nothing
-                return;
-            }
-        }
+        const value = Number(e.target.value);
 
-        singleProduct.isSaleReturn || singleProduct.isSaleReturnEdit
-            ? setUpdateProducts((updateProducts) =>
-                  updateProducts.map((item) => {
-                      if (item.id === singleProduct.id) {
-                          if (item.sold_quantity < Number(e.target.value)) {
-                              dispatch(
-                                  addToast({
-                                      text: getFormattedMessage(
-                                          "sale-return.product-qty.validate.message"
-                                      ),
-                                      type: toastType.ERROR,
-                                  })
-                              );
-                              return { ...item, quantity: item.sold_quantity };
-                          } else {
-                              return {
-                                  ...item,
-                                  quantity: Number(e.target.value),
-                              };
-                          }
-                      } else {
-                          return item;
-                      }
-                  })
-              )
-            : setUpdateProducts((updateProducts) =>
-                  updateProducts.map((item) =>
-                      item.id === singleProduct.id
-                          ? { ...item, quantity: Number(value) }
-                          : item
-                  )
-              );
+        setUpdateProducts((updateProducts) =>
+            updateProducts.map((item) =>
+                item.id === singleProduct.id
+                    ? { ...item, quantity: value }
+                    : item
+            )
+        );
     };
 
     const onClickShowProductModal = () => {
@@ -198,7 +242,7 @@ const ProductTableBody = (props) => {
                         allConfigData,
                         frontSetting.value &&
                             frontSetting.value.currency_symbol,
-                        amountBeforeTax(singleProduct).toFixed(2)
+                        amountBeforeTax1(singleProduct).toFixed(2)
                     )}
                 </td>
                 <td>

@@ -4,24 +4,36 @@ import { addToast } from "./toastAction";
 import { setLoading } from "./loadingAction";
 import { setTotalRecord } from "./totalRecordAction";
 
-export const fetchAllSalePurchaseCount = () => async (dispatch) => {
+export const fetchAllSalePurchaseCount = (warehouseId) => async (dispatch) => {
     dispatch(setLoading(true));
-    apiConfig
-        .get(apiBaseURL.ALL_SALE_PURCHASE)
-        .then((response) => {
-            dispatch({
-                type: dashboardActionType.FETCH_ALL_SALE_PURCHASE,
-                payload: response.data.data,
-            });
-            dispatch(setLoading(false));
-        })
-        .catch((response) => {
-            dispatch(
-                addToast({
-                    text: response.response.data.message,
-                    type: toastType.ERROR,
-                })
-            );
-            dispatch(setLoading(false));
+
+    try {
+        const response = await apiConfig.get(
+            apiBaseURL.ALL_SALE_PURCHASE,
+            {
+                params: warehouseId
+                    ? { warehouse_id: warehouseId }
+                    : {}
+            }
+        );
+        console.log("WAREHOUSE PARAM:", warehouseId);
+
+        dispatch({
+            type: dashboardActionType.FETCH_ALL_SALE_PURCHASE,
+            payload: response.data.data,
         });
+    } catch (error) {
+        dispatch(
+            addToast({
+                text:
+                    error?.response?.data?.message ||
+                    "Failed to fetch sale & purchase count",
+                type: toastType.ERROR,
+            })
+        );
+    } finally {
+        dispatch(setLoading(false));
+    }
 };
+
+

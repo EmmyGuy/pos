@@ -14,7 +14,7 @@ export const prepareSaleProductArray = (products) => {
             tax_type: product.attributes.tax_type ? product.attributes.tax_type : 1,
             tax_value: product.attributes.order_tax ? product.attributes.order_tax : 0.00,
             tax_amount: 0.00,
-            discount_type: '2',
+            discount_type: '1',
             discount_value: 0.00,
             discount_amount: 0.00,
             sale_unit: product.attributes?.sale_unit?.id ? Number(product.attributes.sale_unit.id) : Number(product.attributes.sale_unit),
@@ -26,7 +26,8 @@ export const prepareSaleProductArray = (products) => {
             adjustMethod: 1,
             adjustment_item_id: "",
             quotation_item_id: "",
-            quantity_limit: product.attributes.quantity_limit
+            quantity_limit: product.attributes.quantity_limit,
+            notes: product.attributes.notes
         })
     });
     return saleProductRowArray;

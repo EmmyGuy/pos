@@ -1,7 +1,7 @@
 import React, {useEffect} from 'react';
 import {Table} from 'react-bootstrap-v5';
 import ProductTableBody from './ProductTableBody';
-import {getFormattedMessage} from '../../sharedMethod';
+import {getFormattedMessage} from '../../sharedMethod'; 
 
 const ProductRowTable = (props) => {
     const {

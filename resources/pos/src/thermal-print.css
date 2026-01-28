@@ -1,0 +1,79 @@
+@media print {
+    body {
+        margin: 0;
+        padding: 0;
+        width: 72mm;
+        font-family: "Arial", sans-serif;
+    }
+
+    .thermal-container {
+        width: 100%;
+        padding: 6px;
+        font-size: 14px;
+        line-height: 1.45;
+        box-sizing: border-box;
+    }
+
+    .title {
+        text-align: center;
+        font-size: 20px;
+        font-weight: 800;
+        margin-bottom: 10px;
+        width: 100%;
+    }
+
+    .section {
+        width: 100%;
+        margin-bottom: 10px;
+        border-bottom: 1px dashed #000;
+        padding-bottom: 6px;
+        box-sizing: border-box;
+    }
+
+    /* Flex rows for left-right alignment */
+    .header-line,
+    .total-row {
+        display: flex;
+        justify-content: space-between;
+        width: 100%;
+    }
+
+    .item-line .item-sub,
+    .item-line .item-total {
+        display: flex;
+        justify-content: space-between;
+        width: 100%;
+    }
+
+    .grand {
+        font-size: 16px;
+        font-weight: 800;
+        border-top: 1px solid #000;
+        margin-top: 6px;
+        padding-top: 6px;
+        width: 100%;
+    }
+
+    .footer {
+        text-align: center;
+        margin-top: 14px;
+        font-size: 14px;
+        font-weight: bold;
+        width: 100%;
+    }
+
+    button, .btn, .no-print {
+        display: none !important;
+    }
+
+    .item-line,
+    .total-box,
+    .grand {
+        page-break-inside: avoid;
+    }
+
+    /* Optional: prevent overflow for long names */
+    .item-header, .item-sub, .item-total {
+        word-break: break-word;
+    }
+}

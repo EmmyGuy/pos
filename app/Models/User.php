@@ -14,6 +14,8 @@ use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
 use Spatie\Permission\Traits\HasRoles;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+
 
 /**
  * App\Models\User
@@ -87,6 +89,7 @@ class User extends Authenticatable implements HasMedia, JsonResourceful, CanRese
         'phone',
         'password',
         'language',
+        'warehouse_id', // ✅ Added warehouse_id
     ];
 
     public static $rules = [
@@ -97,6 +100,7 @@ class User extends Authenticatable implements HasMedia, JsonResourceful, CanRese
         'password' => 'required|min:6',
         'confirm_password' => 'required|min:6|same:password',
         'image' => 'image|mimes:jpg,jpeg,png',
+        'warehouse_id' => 'nullable|exists:warehouses,id', // ✅ Added validation rule
     ];
 
     public function getImageUrlAttribute(): string
@@ -145,6 +149,7 @@ class User extends Authenticatable implements HasMedia, JsonResourceful, CanRese
             'phone' => $this->phone,
             'image' => $this->image_url,
             'role' => $this->roles,
+            'warehouse' => $this->warehouse?->name,
             'created_at' => $this->created_at,
             'language' => $this->language,
         ];
@@ -162,5 +167,10 @@ class User extends Authenticatable implements HasMedia, JsonResourceful, CanRese
     public function sales()
     {
         return $this->hasMany(Sale::class);
+    }
+    
+    public function warehouse(): BelongsTo
+    {
+        return $this->belongsTo(Warehouse::class, 'warehouse_id');
     }
 }

@@ -1060,34 +1060,27 @@ const ProductForm = (props) => {
                                     </div>
                                     <div className="col-md-6 mb-3">
                                         <label className="form-label">
-                                            {getFormattedMessage(
-                                                "globally.input.notes.label"
-                                            )}
-                                            :{" "}
+                                             Discount %:{" "}
                                         </label>
-                                        <textarea
+                                        <select
                                             className="form-control"
                                             name="notes"
-                                            rows={3}
-                                            placeholder={placeholderText(
-                                                "globally.input.notes.placeholder.label"
-                                            )}
+                                            value={productValue.notes || ""}
                                             onChange={(e) => onChangeInput(e)}
-                                            value={
-                                                productValue.notes
-                                                    ? productValue.notes ===
-                                                        "null"
-                                                        ? ""
-                                                        : productValue.notes
-                                                    : ""
-                                            }
-                                        />
+                                        >
+                                            <option value="">Select Discount %</option>
+                                            {Array.from({ length: 20 }, (_, i) => i + 1).map((num) => (
+                                                <option key={num} value={num}>
+                                                    {num}
+                                                </option>
+                                            ))}
+                                        </select>
+
                                         <span className="text-danger d-block fw-400 fs-small mt-2">
-                                            {errors["notes"]
-                                                ? errors["notes"]
-                                                : null}
+                                            {errors["notes"] ? errors["notes"] : null}
                                         </span>
                                     </div>
+
                                 </div>
                             </div>
                         </div>

@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { Col, Row } from "react-bootstrap";
-import { connect } from "react-redux";
+import { connect,useSelector  } from "react-redux";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
     faShoppingCart,
@@ -26,13 +26,14 @@ const TodaySalePurchaseCount = (props) => {
         allSalePurchase,
         fetchAllSalePurchaseCount,
         allConfigData,
+        selectedWarehouseId,
     } = props;
     const navigate = useNavigate();
 
     useEffect(() => {
-        todaySalePurchaseCount();
-        fetchAllSalePurchaseCount();
-    }, []);
+        todaySalePurchaseCount(selectedWarehouseId);
+        fetchAllSalePurchaseCount(selectedWarehouseId);
+    }, [selectedWarehouseId]);
 
     const onClick = (redirect, permission) => {
         if (
@@ -297,8 +298,8 @@ const TodaySalePurchaseCount = (props) => {
     );
 };
 const mapStateToProps = (state) => {
-    const { todayCount, allSalePurchase, config, allConfigData } = state;
-    return { todayCount, allSalePurchase, config, allConfigData };
+    const { todayCount, allSalePurchase, config, allConfigData, warehouseFilter } = state;
+    return { todayCount, allSalePurchase, config, allConfigData, selectedWarehouseId: warehouseFilter.selectedWarehouseId, };
 };
 
 export default connect(mapStateToProps, {

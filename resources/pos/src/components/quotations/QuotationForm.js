@@ -24,7 +24,7 @@ const QuotationForm = ( props ) => {
         addQuoationData,
         id,
         customers,
-        warehouses,
+        warehouses, 
         singleQuotation,
         customProducts,
         products,
@@ -101,8 +101,29 @@ const QuotationForm = ( props ) => {
     }, [] );
 
     useEffect( () => {
-        saleValue.warehouse_id.value && fetchProductsByWarehouse( saleValue?.warehouse_id?.value )
-    }, [ saleValue.warehouse_id.value ] )
+            saleValue.warehouse_id.value && fetchProductsByWarehouse( saleValue?.warehouse_id?.value )
+        }, [ saleValue.warehouse_id.value ] );
+
+    useEffect(() => {
+        const totalAmount = calculateCartTotalAmount(updateProducts, saleValue);
+
+    // const totalDiscount = updateProducts.reduce((sum, item) => {
+    //     return sum + (item.discount || 0);
+    // }, 0);
+
+    setSaleValue(prev => ({
+            ...prev,
+            grand_total: totalAmount,
+            //total_discount: totalDiscount
+        }));
+    }, [
+        saleValue.discount,
+        saleValue.tax_rate,
+        saleValue.shipping,
+        updateProducts
+    ]);
+
+
 
     const handleValidation = () => {
         let error = {};
@@ -137,19 +158,37 @@ const QuotationForm = ( props ) => {
         setErrors( '' );
     };
 
-    const onChangeInput = ( e ) => {
+    const numericFields = ["discount", "tax_rate", "shipping"];
+
+    // const onChangeInput = ( e ) => {
+    //     e.preventDefault();
+    //     const { value } = e.target;
+    //     // check if value includes a decimal point
+    //     if ( value.match( /\./g ) ) {
+    //         const [ , decimal ] = value.split( '.' );
+    //         // restrict value to only 2 decimal places
+    //         if ( decimal?.length > 2 ) {
+    //             // do nothing
+    //             return;
+    //         }
+    //     }
+    //     setSaleValue( inputs => ( { ...inputs, [ e.target.name ]: value && value } ) );
+    // };
+
+    const onChangeInput = (e) => {
         e.preventDefault();
-        const { value } = e.target;
-        // check if value includes a decimal point
-        if ( value.match( /\./g ) ) {
-            const [ , decimal ] = value.split( '.' );
-            // restrict value to only 2 decimal places
-            if ( decimal?.length > 2 ) {
-                // do nothing
-                return;
-            }
+        const { name, value } = e.target;
+
+        // Allow only numbers and at most 2 decimals
+        if (value.includes(".")) {
+            const [ , decimal ] = value.split(".");
+            if (decimal?.length > 2) return;
         }
-        setSaleValue( inputs => ( { ...inputs, [ e.target.name ]: value && value } ) );
+
+        setSaleValue(prev => ({
+            ...prev,
+            [name]: numericFields.includes(name) ? Number(value || 0) : value
+        }));
     };
 
     const onNotesChangeInput = ( e ) => {
@@ -226,19 +265,32 @@ const QuotationForm = ( props ) => {
         }
     };
 
-    const onBlurInput = ( el ) => {
-        if ( el.target.value === '' ) {
-            if ( el.target.name === "shipping" ) {
-                setSaleValue( { ...saleValue, shipping: "0.00" } );
-            }
-            if ( el.target.name === "discount" ) {
-                setSaleValue( { ...saleValue, discount: "0.00" } );
-            }
-            if ( el.target.name === "tax_rate" ) {
-                setSaleValue( { ...saleValue, tax_rate: "0.00" } );
-            }
+    // const onBlurInput = ( el ) => {
+    //     if ( el.target.value === '' ) {
+    //         if ( el.target.name === "shipping" ) {
+    //             setSaleValue( { ...saleValue, shipping: "0.00" } );
+    //         }
+    //         if ( el.target.name === "discount" ) {
+    //             setSaleValue( { ...saleValue, discount: "0.00" } );
+    //         }
+    //         if ( el.target.name === "tax_rate" ) {
+    //             setSaleValue( { ...saleValue, tax_rate: "0.00" } );
+    //         }
+    //     }
+    // }
+
+    const onBlurInput = (e) => {
+        const { name, value } = e.target;
+
+        if (numericFields.includes(name)) {
+            // Convert empty or invalid to 0
+            const val = parseFloat(value);
+            setSaleValue(prev => ({
+                ...prev,
+                [name]: isNaN(val) ? 0 : val
+            }));
         }
-    }
+    };
 
     return (
         <div className='card'>

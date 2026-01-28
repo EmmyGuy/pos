@@ -59,7 +59,7 @@ export const fetchProducts =
         };
 
 export const fetchProduct =
-    (productId, singleProduct, isLoading = true) =>
+    (productId, singleProduct, isLoading = true) => 
         async (dispatch) => {
             if (isLoading) {
                 dispatch(setLoading(true));

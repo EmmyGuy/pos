@@ -84,11 +84,11 @@ const SaleReturnForm = (props) => {
         newSaleUnit,
     ]);
 
-    useEffect(() => {
-        updateProducts.length >= 1
-            ? dispatch({ type: "DISABLE_OPTION", payload: true })
-            : dispatch({ type: "DISABLE_OPTION", payload: false });
-    }, [updateProducts]);
+    // useEffect(() => {
+    //     updateProducts.length >= 1
+    //         ? dispatch({ type: "DISABLE_OPTION", payload: true })
+    //         : dispatch({ type: "DISABLE_OPTION", payload: false });
+    // }, [updateProducts]);
 
     useEffect(() => {
         if (singleSale) {
@@ -149,7 +149,7 @@ const SaleReturnForm = (props) => {
     const handleValidation = () => {
         let error = {};
         let isValid = false;
-        const qtyCart = updateProducts.filter((a) => a.quantity === 0);
+        //const qtyCart = updateProducts.filter((a) => a.quantity === 0);
 
         if (!saleReturnValue.date) {
             error["date"] = getFormattedMessage("globally.date.validate.label");
@@ -161,25 +161,27 @@ const SaleReturnForm = (props) => {
             error["customer_id"] = getFormattedMessage(
                 "sale.select.customer.validate.label"
             );
-        } else if (qtyCart.length > 0) {
-            dispatch(
-                addToast({
-                    text: getFormattedMessage(
-                        "globally.product-quantity.validate.message"
-                    ),
-                    type: toastType.ERROR,
-                })
-            );
-        } else if (updateProducts.length < 1) {
-            dispatch(
-                addToast({
-                    text: getFormattedMessage(
-                        "purchase.product-list.validate.message"
-                    ),
-                    type: toastType.ERROR,
-                })
-            );
-        } else if (!saleReturnValue.status) {
+        } 
+        // else if (qtyCart.length > 0) {
+        //     dispatch(
+        //         addToast({
+        //             text: getFormattedMessage(
+        //                 "globally.product-quantity.validate.message"
+        //             ),
+        //             type: toastType.ERROR,
+        //         })
+        //     );
+        // } else if (updateProducts.length < 1) {
+        //     dispatch(
+        //         addToast({
+        //             text: getFormattedMessage(
+        //                 "purchase.product-list.validate.message"
+        //             ),
+        //             type: toastType.ERROR,
+        //         })
+        //     );
+        // } 
+        else if (!saleReturnValue.status) {
             error["status"] = getFormattedMessage(
                 "globally.status.validate.label"
             );
@@ -346,7 +348,7 @@ const SaleReturnForm = (props) => {
                     <div className="col-md-4 mb-5">
                         <label className="form-label">
                             {/*{getFormattedMessage('expense.input.title.label')}:*/}
-                            Sale Reference
+                            Sale Referencess
                         </label>
                         <span className="required" />
                         <input

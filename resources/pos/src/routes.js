@@ -73,6 +73,8 @@ import CreateQuotation from "./components/quotations/CreateQuotation";
 import EditQuotation from "./components/quotations/EditQuotation";
 import CreateQuotationSale from "./components/quotations/CreateQuotationSale";
 import QuotationDetails from "./components/quotations/QuotationDetails";
+import QuotationPrintView  from "./components/quotations/QuotationPrintView";
+import QuotationSalesDetail from "./components/quotations/QuotationSalesDetail";
 import MailSettings from "./components/settings/MailSettings";
 import SmsTemplates from "./components/sms-templates/SmsTemplates";
 import EditSmsTemplate from "./components/sms-templates/EditSmsTemplate";
@@ -368,6 +370,21 @@ export const route = [
         ele: <QuotationDetails />,
         permission: Permissions.MANAGE_QUOTATION,
     },
+    {
+        path: "quotations/detail/:id",
+        ele: <QuotationDetails />,
+        permission: Permissions.MANAGE_QUOTATION,
+    },
+    {
+        path: "quotations/:id/print",
+        ele: <QuotationPrintView />,
+        permission: Permissions.MANAGE_QUOTATION,
+    },
+    // {
+    //     path: "quotation-sales",
+    //     ele: <QuotationSalesDetail />,
+    //     permission: Permissions.MANAGE_SALE,
+    // },
     {
         path: "sale-return",
         ele: <SaleReturn />,

@@ -21,6 +21,8 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import TopProgressBar from "../../shared/components/loaders/TopProgressBar";
 import { quotationDetailsAction } from "../../store/action/quotationDetails";
+import "../../thermal-print.css";
+
 
 const QuotationDetails = (props) => {
     const {
@@ -47,6 +49,17 @@ const QuotationDetails = (props) => {
                 title={getFormattedMessage("details-quotations.title")}
                 to="/app/quotations"
             />
+
+            <div className="text-end mb-3">
+                <button
+                    className="btn btn-primary"
+                    onClick={() => window.open(`#/app/quotations/${id}/print`, "_blank")}
+                >
+                    Print Receipt
+                </button>
+            </div>
+
+
             <TabTitle title={placeholderText("details-quotations.title")} />
             <div className="card">
                 <div className="card-body">

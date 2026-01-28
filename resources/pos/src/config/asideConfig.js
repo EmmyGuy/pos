@@ -215,6 +215,14 @@ export default [
                 class: "d-flex",
                 permission: Permissions.MANAGE_SALE_RETURN,
             },
+            {
+                title: "Quotation-sales.title",
+                name: "Quotation-sales",
+                fontIcon: <FontAwesomeIcon icon={faArrowRight} />,
+                to: "/app/quotation-sales",
+                class: "d-flex",
+                permission: Permissions.MANAGE_SALE,
+            },
         ],
     },
     {

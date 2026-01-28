@@ -26,7 +26,7 @@ abstract class BaseJsonResource extends JsonResource
     public function toArray($request): array
     {
         if (self::$usedWithCollection) {
-            return $this->resource->asJsonResourceWithRelationships();
+            return $this->resource->asJsonResourceWithRelationships(); 
         }
 
         $response = [

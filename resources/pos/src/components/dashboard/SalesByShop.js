@@ -43,6 +43,8 @@ const SalesByShop = ({ salesByShop, salesByShopAction, allConfigData, frontSetti
                                         <th>{getFormattedMessage("dashboard.salesByShop.netSale.label")}</th>
                                         <th>{getFormattedMessage("dashboard.salesByShop.totalCost.label")}</th>
                                         <th>{getFormattedMessage("dashboard.salesByShop.profit.label")}</th>
+                                        <th>Today's Sale</th>
+                                        <th>This Month Sale</th>
                                         <th>{getFormattedMessage("react-data-table.action.column.label")}</th>
                                     </tr>
                                 </thead>
@@ -83,6 +85,21 @@ const SalesByShop = ({ salesByShop, salesByShopAction, allConfigData, frontSetti
                                                     allConfigData,
                                                     frontSetting?.value?.currency_symbol,
                                                     shop.profit
+                                                )}
+                                            </td>
+                                            <td className="py-4">
+                                                {currencySymbolHandling(
+                                                    allConfigData,
+                                                    frontSetting?.value?.currency_symbol,
+                                                    shop.today_sale
+                                                )}
+                                            </td>
+
+                                            <td className="py-4">
+                                                {currencySymbolHandling(
+                                                    allConfigData,
+                                                    frontSetting?.value?.currency_symbol,
+                                                    shop.this_month_sale
                                                 )}
                                             </td>
                                             <td className="py-4">

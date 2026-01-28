@@ -675,6 +675,8 @@
     "supplier.report.title": "Suppliers Reports",
     "prefix.title": "Prefixes",
     "quotations.title": "Quotations",
+    "Quotation-sales.title": "Customer Payments",
+    "Quotation-sales": "Add Payments",
     "create-quotation.title": "Create Quotation",
     "edit-quotation.title": "Edit Quotation",
     "details-quotations.title": "Quotation Details",

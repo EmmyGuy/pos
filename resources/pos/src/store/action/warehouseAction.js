@@ -55,7 +55,7 @@ export const fetchWarehouses =
                     })
                 );
             });
-    };
+    }; 
 
 export const fetchWarehouse =
     (warehouseId, isLoading = true) =>

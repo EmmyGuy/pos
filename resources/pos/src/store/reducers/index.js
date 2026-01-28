@@ -99,6 +99,7 @@ import posCloseRegisterDetailsReducer from './pos/posCloseRegisterDetailsReducer
 import posRegisterReportDetailsReducer from './pos/posRegisterReportDetailsReducer';
 import variationReducer from './variationReducer';
 import salesByShopReducer from './salesByShopReducer'; // Import the salesByShopReducer
+import warehouseFilterReducer from "./warehouseFilterReducer";
 
 export default combineReducers( {
     loginUser: loginReducers,
@@ -201,4 +202,6 @@ export default combineReducers( {
     closeRegisterDetails: posCloseRegisterDetailsReducer,
     registerReportDetails: posRegisterReportDetailsReducer,
     salesByShop: salesByShopReducer, // Add the reducer to the root reducer
+    warehouseFilter: warehouseFilterReducer,
+    warehouse: warehouseFilterReducer,
 } );

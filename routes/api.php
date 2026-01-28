@@ -21,6 +21,7 @@ use App\Http\Controllers\API\ProductCategoryAPIController;
 use App\Http\Controllers\API\PurchaseAPIController;
 use App\Http\Controllers\API\PurchaseReturnAPIController;
 use App\Http\Controllers\API\QuotationAPIController;
+use App\Http\Controllers\API\QuotationSalesAPIController;
 use App\Http\Controllers\API\ReportAPIController;
 use App\Http\Controllers\API\RoleAPIController;
 use App\Http\Controllers\API\SaleAPIController;
@@ -405,6 +406,14 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // Coupon Code Routes
     Route::resource('coupon-codes', CouponCodeAPIController::class);
+
+    Route::prefix('quotation-sales')->group(function () {
+        Route::get('/', [QuotationSalesAPIController::class, 'index']); // list quotations
+        Route::get('/search', [QuotationSalesAPIController::class, 'search']); // sales_rep search
+        Route::get('/sales-reps', [QuotationSalesAPIController::class, 'getSalesReps']); // list sales_reps
+        Route::get('/filter', [QuotationSalesAPIController::class, 'filterByDate']); // date range
+        Route::post('/payment', [QuotationSalesAPIController::class, 'createPayment']); // create payment
+    });
 });
 
 //Route::post('login', [AuthController::class, 'login'])->name('login');

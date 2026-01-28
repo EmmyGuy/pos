@@ -62,7 +62,10 @@ const ActionDropDownButton = (props) => {
                         {getFormattedMessage("create-payment-title")}
                     </Dropdown.Item> : null
                 }
-                {isCreatesSales && !item.is_sale_created  ?
+                {isCreatesSales &&
+                    config &&
+                    config.includes(Permissions.MANAGE_SALE) &&
+                    !item.is_sale_created  ?
                     <Dropdown.Item onClick={(e) => {
                         e.stopPropagation();
                         onCreateSaleClick(item);

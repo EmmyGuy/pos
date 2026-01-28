@@ -20,27 +20,23 @@ const MasterLayout = (props) => {
         config,
         allConfigData,
     } = props;
+
     const [isResponsiveMenu, setIsResponsiveMenu] = useState(false);
     const [isMenuCollapse, setIsMenuCollapse] = useState(false);
+
     const newRoutes = config && prepareRoutes(config);
     const token = localStorage.getItem(Tokens.ADMIN);
 
     useEffect(() => {
         if (token) {
             fetchConfig();
-        }
-        if (!token) {
+        } else {
             window.location.href = environment.URL + "#" + "/login";
         }
     }, []);
 
-    const menuClick = () => {
-        setIsResponsiveMenu(!isResponsiveMenu);
-    };
-
-    const menuIconClick = () => {
-        setIsMenuCollapse(!isMenuCollapse);
-    };
+    const menuClick = () => setIsResponsiveMenu(!isResponsiveMenu);
+    const menuIconClick = () => setIsMenuCollapse(!isMenuCollapse);
 
     return (
         <div className="d-flex flex-row flex-column-fluid">
@@ -52,44 +48,45 @@ const MasterLayout = (props) => {
                 menuIconClick={menuIconClick}
                 isMenuCollapse={isMenuCollapse}
             />
-            <div
-                className={`${
-                    isMenuCollapse === true ? "wrapper-res" : "wrapper"
-                } d-flex flex-column flex-row-fluid`}
-            >
+
+            <div className={`${isMenuCollapse ? "wrapper-res" : "wrapper"} d-flex flex-column flex-row-fluid`}>
                 <div className="d-flex align-items-stretch justify-content-between header">
-                    <div className="container-fluid d-flex align-items-stretch justify-content-xxl-between flex-grow-1">
-                        <button
-                            type="button"
-                            className="btn d-flex align-items-center d-xl-none px-0"
-                            title="Show aside menu"
-                            onClick={menuClick}
-                        >
-                            <FontAwesomeIcon icon={faBars} className="fs-1" />
-                        </button>
-                        <AsideTopSubMenuItem
-                            asideConfig={asideConfig}
-                            isMenuCollapse={isMenuCollapse}
-                        />
+                    <div className="container-fluid d-flex align-items-center justify-content-xxl-between flex-grow-1 gap-3">
+                        <div className="d-flex align-items-center gap-3">
+                            <button
+                                type="button"
+                                className="btn d-flex align-items-center d-xl-none px-0"
+                                title="Show aside menu"
+                                onClick={menuClick}
+                            >
+                                <FontAwesomeIcon icon={faBars} className="fs-1" />
+                            </button>
+
+                            <AsideTopSubMenuItem
+                                asideConfig={asideConfig}
+                                isMenuCollapse={isMenuCollapse}
+                            />
+                        </div>
+
                         <Header newRoutes={newRoutes} />
                     </div>
                 </div>
+
                 <div className="content d-flex flex-column flex-column-fluid pt-7">
                     <div className="d-flex flex-column-fluid">
                         <div className="container-fluid">{children}</div>
                     </div>
                 </div>
+
                 <div className="container-fluid">
-                    <Footer
-                        allConfigData={allConfigData}
-                        frontSetting={frontSetting}
-                    />
+                    <Footer allConfigData={allConfigData} frontSetting={frontSetting} />
                 </div>
             </div>
         </div>
     );
 };
 
+// ------------------------- Helpers -------------------------
 const getRouteWithSubMenu = (route, permissions) => {
     const subRoutes = route.subMenu
         ? route.subMenu.filter(
@@ -98,8 +95,7 @@ const getRouteWithSubMenu = (route, permissions) => {
                   item.permission === ""
           )
         : null;
-    const newSubRoutes = subRoutes ? { ...route, newRoute: subRoutes } : route;
-    return newSubRoutes;
+    return subRoutes ? { ...route, newRoute: subRoutes } : route;
 };
 
 const prepareRoutes = (config) => {
@@ -118,17 +114,26 @@ const prepareRoutes = (config) => {
     return filterRoutes;
 };
 
+// ------------------------- Redux -------------------------
 const mapStateToProps = (state) => {
     const newPermissions = [];
-    const { permissions, settings, frontSetting, config, allConfigData } =
-        state;
+    const { permissions, settings, frontSetting, config, allConfigData } = state;
 
     if (permissions) {
-        permissions.forEach((permission) =>
-            newPermissions.push(permission.attributes.name)
-        );
+        permissions.forEach((permission) => {
+            if (permission?.attributes?.name) {
+                newPermissions.push(permission.attributes.name);
+            }
+        });
     }
-    return { newPermissions, settings, frontSetting, config, allConfigData };
+
+    return {
+        newPermissions,
+        settings,
+        frontSetting,
+        config,
+        allConfigData,
+    };
 };
 
 export default connect(mapStateToProps, { fetchConfig })(MasterLayout);

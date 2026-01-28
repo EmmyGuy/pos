@@ -183,41 +183,101 @@ class DashboardAPIController extends AppBaseController
         return $this->sendResponse($productResponse, 'Stocks retrieved successfully');
     }
 
+    // public function getSalesByShop(): JsonResponse
+    // {
+    //     $shopSales = Shop::with(['sales.saleItems', 'sales.saleReturns.saleReturnItems'])
+    //         ->get()
+    //         ->map(function ($shop) {
+    //             $sales = $shop->sales;
+
+    //             $totalSale = $sales->sum(function ($sale) {
+    //                 return $sale->saleItems->sum('sub_total');
+    //             });
+
+    //             $totalCost = $sales->sum(function ($sale) {
+    //                 return $sale->saleItems->sum(function ($item) {
+    //                     return $item->product->product_price * $item->quantity;
+    //                 });
+    //             });
+
+    //             $totalReturn = $sales->sum(function ($sale) {
+    //                 return $sale->saleReturns->sum(function ($return) {
+    //                     return $return->saleReturnItems->sum('sub_total');
+    //                 });
+    //             });
+
+    //             return [
+    //                 'shop_name'    => $shop->name,
+    //                 'total_sale'   => $totalSale,
+    //                 'total_cost'   => $totalCost,
+    //                 'total_return' => $totalReturn,
+    //                 'net_sale'     => $totalSale - $totalReturn,
+    //                 'profit'       => ($totalSale - $totalReturn) - $totalCost,
+    //             ];
+    //         });
+
+    //     return $this->sendResponse($shopSales, 'Sales retrieved successfully');
+    // }
+
     public function getSalesByShop(): JsonResponse
-    {
-        $shopSales = Shop::with(['sales.saleItems', 'sales.saleReturns.saleReturnItems'])
-            ->get()
-            ->map(function ($shop) {
-                $sales = $shop->sales;
+{
+    $today = Carbon::today();
+    $startOfMonth = Carbon::now()->startOfMonth();
+    $endOfMonth = Carbon::now()->endOfMonth();
 
-                $totalSale = $sales->sum(function ($sale) {
-                    return $sale->saleItems->sum('sub_total');
-                });
+    $shopSales = Shop::with([
+            'sales.saleItems.product',
+            'sales.saleReturns.saleReturnItems'
+        ])
+        ->get()
+        ->map(function ($shop) use ($today, $startOfMonth, $endOfMonth) {
 
-                $totalCost = $sales->sum(function ($sale) {
-                    return $sale->saleItems->sum(function ($item) {
-                        return $item->product->product_price * $item->quantity;
-                    });
-                });
+            $sales = $shop->sales;
 
-                $totalReturn = $sales->sum(function ($sale) {
-                    return $sale->saleReturns->sum(function ($return) {
-                        return $return->saleReturnItems->sum('sub_total');
-                    });
-                });
+            $totalSale = $sales->sum(fn ($sale) =>
+                $sale->saleItems->sum('sub_total')
+            );
 
-                return [
-                    'shop_name'    => $shop->name,
-                    'total_sale'   => $totalSale,
-                    'total_cost'   => $totalCost,
-                    'total_return' => $totalReturn,
-                    'net_sale'     => $totalSale - $totalReturn,
-                    'profit'       => ($totalSale - $totalReturn) - $totalCost,
-                ];
-            });
+            $totalCost = $sales->sum(fn ($sale) =>
+                $sale->saleItems->sum(fn ($item) =>
+                    $item->product->product_price * $item->quantity
+                )
+            );
 
-        return $this->sendResponse($shopSales, 'Sales retrieved successfully');
-    }
+            $totalReturn = $sales->sum(fn ($sale) =>
+                $sale->saleReturns->sum(fn ($return) =>
+                    $return->saleReturnItems->sum('sub_total')
+                )
+            );
+
+            // ✅ TODAY'S SALES
+            $todaySale = $sales
+                ->whereBetween('date', [$today->startOfDay(), $today->endOfDay()])
+                ->sum(fn ($sale) =>
+                    $sale->saleItems->sum('sub_total')
+                );
+
+            // ✅ THIS MONTH'S SALES
+            $thisMonthSale = $sales
+                ->whereBetween('date', [$startOfMonth, $endOfMonth])
+                ->sum(fn ($sale) =>
+                    $sale->saleItems->sum('sub_total')
+                );
+
+            return [
+                'shop_name'        => $shop->name,
+                'total_sale'       => $totalSale,
+                'total_return'     => $totalReturn,
+                'net_sale'         => $totalSale - $totalReturn,
+                'total_cost'       => $totalCost,
+                'profit'           => ($totalSale - $totalReturn) - $totalCost,
+                'today_sale'       => $todaySale,
+                'this_month_sale'  => $thisMonthSale,
+            ];
+        });
+
+    return $this->sendResponse($shopSales, 'Sales retrieved successfully');
+}
 
     public function getSalesItemsByShop($shopName)
     {
